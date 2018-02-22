@@ -1,8 +1,12 @@
 #include "LedSegment2.h"
+#include <Arduino.h>
 
-LedSegment2::LedSegment2 () {
-  length = 42;
+LedSegment2::LedSegment2 (CRGB* leds_, int num_leds_) {
+  leds = leds_;
+  num_leds = num_leds_;
+  length = 1;
   start = 0;
+  hue = 0;
 }
 
 int LedSegment2::getLength() {
@@ -10,8 +14,18 @@ int LedSegment2::getLength() {
 }
 
 void LedSegment2::draw() {
-
+  for (int i = start; i < (start+length); i++) {
+    // this objects leds pointer
+    // use to set the CRGB array to
+    leds[i]= CHSV(random(255), 255, 127) ;
+    // leds[i]= CHSV(hue, 255, 127) ;
+  }
 }
 void LedSegment2::setStart(int start_) {
-  start = start_;
+  if(start_ >= 0 && start_ < num_leds - length) {
+    start = start_;
+  } else {
+    Serial.print("LedSegment Start Position out of bounds (ignored): ");
+    Serial.println(start_);
+  }
 }

@@ -1,7 +1,6 @@
+#include "LedSegment.h"
 #include "Arduino.h"
 #include "FastLED.h"
-#include "LedSegment.h"
-
 
 LedSegment::LedSegment(CRGB* leds_, int numLeds_) {
   leds = leds_;

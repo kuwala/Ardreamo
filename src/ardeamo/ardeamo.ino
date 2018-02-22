@@ -42,32 +42,60 @@ int mousePositions[3][3][2] = {
 
 // LED Parts
 #define NUM_LEDS 8
-// 6?
-#define DATA_PIN 13
+#define DATA_PIN 14
 
 CRGB leds[NUM_LEDS];
 // LedSegment segment1 = LedSegment(leds, NUM_LEDS);
-LedSegment2 segment1 = LedSegment2();
-
-int softwareKnob = 0;
-int softwareKnobMax = 127;
+LedSegment2 segment1 = LedSegment2(leds, NUM_LEDS);
 
 // Hardware Inputs
 Inputs inputs = Inputs();
+
 // Software Inputs
-SKnob knob1 = SKnob(127);
+// 80 positions per 360deg full rotation
+// 20 detents per 360deg full rotation
+// 4 positions per 1 detent
+// 0-7 leds -> 28
+int softwareKnob = 0;
+int softwareKnobMax = 28;
+SKnob knob1 = SKnob(softwareKnobMax);
+
+int old_segment_pos = 0;
 
 void setup() {
   // Set up LedS
   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
 }
+void fadeToBlack() {
+  for (int i = 0; i < NUM_LEDS; i++) {
+     leds[i].fadeToBlackBy(64);
+  }
+}
 void mapKnobToLeds() {
   // Map knob rotation to segment start position
-  int segment_pos = map(knob1.getValue(), 0, 127, 0, 16);
+
+  // Get the hardware knob movement
+  int movement = inputs.getKnobRightMove();
+  // Serial.print(" Movement = ");
+  // Serial.println(movement);
+  // store it in the softwareKnob
+  knob1.move(movement);
+
+  // Map Led segment's start Position to the softwareKnob position
+  int segment_pos = map(knob1.getValue(), 0, softwareKnobMax, 0, 7);
+  // Serial.print(" Pos = ");
+  // Serial.println(segment_pos);
+  if(segment_pos != old_segment_pos) {
+    Serial.println(segment_pos);
+    old_segment_pos = segment_pos;
+  }
+
   segment1.setStart(segment_pos);
 
 }
 void loop() {
+  fadeToBlack();
+
   // Get Inputs
   inputs.update();
   // Update Objects
@@ -76,6 +104,7 @@ void loop() {
   segment1.draw();
   // Outputs
   FastLED.show();
+  inputs.debugText();
   delay(30);
 }
 
