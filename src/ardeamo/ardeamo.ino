@@ -13,6 +13,7 @@
 #include "SKnob.h"
 #include "SanityCheck.h"
 // #include "LedSegment.h"
+#include "LedSegment2.h"
 
 // Midi
 const int channel = 1;
@@ -44,8 +45,9 @@ int mousePositions[3][3][2] = {
 // 6?
 #define DATA_PIN 13
 
-// LedSegment segment1 = LedSegment(leds, NUM_LEDS);
 CRGB leds[NUM_LEDS];
+// LedSegment segment1 = LedSegment(leds, NUM_LEDS);
+LedSegment2 segment1 = LedSegment2();
 
 int softwareKnob = 0;
 int softwareKnobMax = 127;
@@ -62,7 +64,7 @@ void setup() {
 void mapKnobToLeds() {
   // Map knob rotation to segment start position
   int segment_pos = map(knob1.getValue(), 0, 127, 0, 16);
-  // segment1.setStart(segment_pos);
+  segment1.setStart(segment_pos);
 
 }
 void loop() {
@@ -71,7 +73,7 @@ void loop() {
   // Update Objects
   mapKnobToLeds();
   // Draw to Displays
-  // segment1.draw();
+  segment1.draw();
   // Outputs
   FastLED.show();
   delay(30);
