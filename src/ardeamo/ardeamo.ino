@@ -65,12 +65,37 @@ int old_segment_pos = 0;
 void setup() {
   // Set up LedS
   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);
+
+  // usbMIDI
+  usbMIDI.setHandleNoteOff(OnNoteOff);
+  usbMIDI.setHandleNoteOn(OnNoteOn) ;
 }
 void fadeToBlack() {
   for (int i = 0; i < NUM_LEDS; i++) {
      leds[i].fadeToBlackBy(64);
   }
 }
+/*
+  usbMIDI stuff
+  */
+void OnNoteOn(byte c, byte n, byte v) {
+  // move led segment based on note pitch
+  int pos = n % 8;
+  segment1.setStart(pos);
+  segment1.setBrightness(255);
+  Serial.print("note on: ");
+  Serial.print(n);
+  Serial.print(" pos : ");
+  Serial.println(pos);
+
+
+}
+void OnNoteOff(byte c, byte n, byte v) {
+  // dim ledSegment
+  Serial.println("noteOffed!");
+  segment1.setBrightness(0);
+}
+
 void mapKnobToLeds() {
   // Map knob rotation to segment start position
 
@@ -98,6 +123,7 @@ void loop() {
 
   // Get Inputs
   inputs.update();
+  usbMIDI.read();
   // Update Objects
   mapKnobToLeds();
   // Draw to Displays
@@ -105,6 +131,7 @@ void loop() {
   // Outputs
   FastLED.show();
   inputs.debugText();
+
   delay(30);
 }
 

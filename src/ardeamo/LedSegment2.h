@@ -9,6 +9,7 @@ public:
   int getLength();
   void draw();
   void setStart(int start_);
+  void setBrightness(uint8_t brightness_);
 
 private:
   CRGB* leds;
@@ -16,6 +17,7 @@ private:
   int length;
   int start;
   uint8_t hue;
+  uint8_t brightness;
 
 };
 
